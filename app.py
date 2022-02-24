@@ -3,28 +3,39 @@ import pandas as pd
 import numpy as np
 
 st.sidebar.title("Navigation")
-file_upload = st.sidebar.file_uploader("Données")
 choix = st.sidebar.selectbox("Elements",["Informations","Carte", "Statistiques"])
 
 if choix == "Informations":
 	st.title("Informations")
 
 if choix == "Carte":
+	#file_upload = st.sidebar.file_uploader("Données")
 	st.title("Carte")
 	path ="/Users/Louis/GitHub/dangers_velo_fontenay/accidents-corporels-de-la-circulation-millesime.csv"
+	path2 = "/Users/Louis/GitHub/dangers_velo_fontenay/barometr.xlsx"
 	file_csv = pd.read_csv(path,sep=";")
-	file_coordinates = pd.DataFrame(file_csv["Coordonnées"])
+	file2_csv = pd.read_excel(path2)
+	st.write(file2_csv)
+
+	# Traitement Problèmes 
+	file_coordinates_probleme = pd.DataFrame(file2_csv)
+	file_coordinates_probleme["latitude"] = pd.to_numeric(file_coordinates_probleme["latitude"],errors='coerce',downcast='float')
+	file_coordinates_probleme["longitude"] = pd.to_numeric(file_coordinates_probleme["longitude"],errors='coerce',downcast='float')
+	# Traitement Accident
+	file_coordinates_accident = pd.DataFrame(file_csv["Coordonnées"])
 	lat,lon = [], []
-	for row in file_coordinates["Coordonnées"]:
+	for row in file_coordinates_accident["Coordonnées"]:
 		try:
 			lat.append(row.split(',')[0])
 			lon.append(row.split(',')[1])
 		except:
 			lat.append(np.NaN)
 			lon.append(np.NaN)
-	file_coordinates['latitude'],file_coordinates['longitude'] = lat,lon
-	del file_coordinates["Coordonnées"]
-	st.write(file_coordinates)
-	st.map(file_coordinates)
+	file_coordinates_accident['latitude'],file_coordinates_accident['longitude'] = lat,lon
+	del file_coordinates_accident["Coordonnées"]
+	file_coordinates_accident = file_coordinates_accident.astype(float)
+	
+	#st.map(file_coordinates_probleme)
+	#st.map(file_coordinates_accident)
 if choix=="Statistiques":
 	st.title("Statistiques")
