@@ -12,15 +12,17 @@ if choix == "Carte":
 	#file_upload = st.sidebar.file_uploader("Données")
 	st.title("Carte")
 	path ="/Users/Louis/GitHub/dangers_velo_fontenay/accidents-corporels-de-la-circulation-millesime.csv"
-	path2 = "/Users/Louis/GitHub/dangers_velo_fontenay/barometr.xlsx"
+	path2 = "/Users/Louis/GitHub/dangers_velo_fontenay/baro.csv"
 	file_csv = pd.read_csv(path,sep=";")
-	file2_csv = pd.read_excel(path2)
+	file2_csv = pd.read_csv(path2,sep=";")
+	file_coordinates_probleme = pd.DataFrame(file2_csv)
+	# Traitement Problèmes 
+	file_coordinates_probleme["latitude"] = pd.to_numeric(file_coordinates_probleme["latitude"])
+	file_coordinates_probleme["longitude"] = pd.to_numeric(file_coordinates_probleme["longitude"])
 	st.write(file2_csv)
 
-	# Traitement Problèmes 
-	file_coordinates_probleme = pd.DataFrame(file2_csv)
-	file_coordinates_probleme["latitude"] = pd.to_numeric(file_coordinates_probleme["latitude"],errors='coerce',downcast='float')
-	file_coordinates_probleme["longitude"] = pd.to_numeric(file_coordinates_probleme["longitude"],errors='coerce',downcast='float')
+	st.map(file_coordinates_probleme)
+
 	# Traitement Accident
 	file_coordinates_accident = pd.DataFrame(file_csv["Coordonnées"])
 	lat,lon = [], []
@@ -35,7 +37,6 @@ if choix == "Carte":
 	del file_coordinates_accident["Coordonnées"]
 	file_coordinates_accident = file_coordinates_accident.astype(float)
 	
-	#st.map(file_coordinates_probleme)
-	#st.map(file_coordinates_accident)
+	st.map(file_coordinates_accident)
 if choix=="Statistiques":
 	st.title("Statistiques")
